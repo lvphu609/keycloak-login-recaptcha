@@ -1,4 +1,4 @@
-package org.keycloak.marjaa.providers.login.recaptcha.authenticator;
+package io.hitatek.keycloak.resetpassword.recaptcha.authenticator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -9,7 +9,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.Authenticator;
-import org.keycloak.authentication.authenticators.browser.UsernamePasswordForm;
+import org.keycloak.authentication.authenticators.resetcred.ResetCredentialChooseUser;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.events.Details;
 import org.keycloak.forms.login.LoginFormsProvider;
@@ -21,27 +21,21 @@ import org.keycloak.services.validation.Validation;
 import org.keycloak.util.JsonSerialization;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class RecaptchaUsernamePasswordForm extends UsernamePasswordForm implements Authenticator{
+public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implements Authenticator{
 	public static final String G_RECAPTCHA_RESPONSE = "g-recaptcha-response";
 	public static final String RECAPTCHA_REFERENCE_CATEGORY = "recaptcha";
 	public static final String SITE_KEY = "site.key";
 	public static final String SITE_SECRET = "secret";
-	private static final Logger logger = Logger.getLogger(RecaptchaUsernamePasswordFormFactory.class);
+	private static final Logger logger = Logger.getLogger(RecaptchaResetPasswordFormFactory.class);
 	private String siteKey;
 
-	@Override
-	protected Response createLoginForm( LoginFormsProvider form ) {
-		form.setAttribute("recaptchaRequired", true);
-		form.setAttribute("recaptchaSiteKey", siteKey);
-		return super.createLoginForm( form );
-	}
+	private static final String TPL_CODE = "recaptcha-login-reset-password.ftl";
 
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
@@ -65,7 +59,7 @@ public class RecaptchaUsernamePasswordForm extends UsernamePasswordForm implemen
 		form.setAttribute("recaptchaRequired", true);
 		form.setAttribute("recaptchaSiteKey", siteKey);
 		form.addScript("https://www.google.com/recaptcha/api.js?hl=" + userLanguageTag);
-
+		context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		super.authenticate(context);
 	}
 

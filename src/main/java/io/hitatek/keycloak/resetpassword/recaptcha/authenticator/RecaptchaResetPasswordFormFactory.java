@@ -1,4 +1,4 @@
-package org.keycloak.marjaa.providers.login.recaptcha.authenticator;
+package io.hitatek.keycloak.resetpassword.recaptcha.authenticator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,6 @@ import org.keycloak.OAuth2Constants;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.AuthenticatorFactory;
 import org.keycloak.authentication.DisplayTypeAuthenticatorFactory;
-import org.keycloak.authentication.authenticators.browser.UsernamePasswordForm;
-import org.keycloak.authentication.authenticators.browser.UsernamePasswordFormFactory;
 import org.keycloak.authentication.authenticators.console.ConsoleUsernamePasswordAuthenticator;
 import org.keycloak.models.AuthenticationExecutionModel;
 import org.keycloak.models.KeycloakSession;
@@ -17,10 +15,10 @@ import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.provider.ProviderConfigProperty;
 
-public class RecaptchaUsernamePasswordFormFactory  implements AuthenticatorFactory, DisplayTypeAuthenticatorFactory {
+public class RecaptchaResetPasswordFormFactory implements AuthenticatorFactory, DisplayTypeAuthenticatorFactory {
 
     public static final String PROVIDER_ID = "recaptcha-u-p-form";
-    public static final RecaptchaUsernamePasswordForm SINGLETON = new RecaptchaUsernamePasswordForm();
+    public static final RecaptchaResetPasswordForm SINGLETON = new RecaptchaResetPasswordForm();
 
     @Override
     public Authenticator create(KeycloakSession session) {
@@ -63,7 +61,7 @@ public class RecaptchaUsernamePasswordFormFactory  implements AuthenticatorFacto
     public boolean isConfigurable() {
         return true;
     }
-    
+
     public static final AuthenticationExecutionModel.Requirement[] REQUIREMENT_CHOICES = {
             AuthenticationExecutionModel.Requirement.REQUIRED
     };
@@ -75,7 +73,7 @@ public class RecaptchaUsernamePasswordFormFactory  implements AuthenticatorFacto
 
     @Override
     public String getDisplayType() {
-        return "Recaptcha Username Password Form";
+        return "Recaptcha Reset Password Form";
     }
 
     @Override
@@ -88,13 +86,13 @@ public class RecaptchaUsernamePasswordFormFactory  implements AuthenticatorFacto
 	static {
 		ProviderConfigProperty property;
 		property = new ProviderConfigProperty();
-		property.setName(RecaptchaUsernamePasswordForm.SITE_KEY);
+		property.setName(RecaptchaResetPasswordForm.SITE_KEY);
 		property.setLabel("Recaptcha Site Key");
 		property.setType(ProviderConfigProperty.STRING_TYPE);
 		property.setHelpText("Google Recaptcha Site Key");
 		CONFIG_PROPERTIES.add(property);
 		property = new ProviderConfigProperty();
-		property.setName(RecaptchaUsernamePasswordForm.SITE_SECRET);
+		property.setName(RecaptchaResetPasswordForm.SITE_SECRET);
 		property.setLabel("Recaptcha Secret");
 		property.setType(ProviderConfigProperty.STRING_TYPE);
 		property.setHelpText("Google Recaptcha Secret");
