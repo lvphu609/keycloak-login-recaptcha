@@ -8,10 +8,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.jboss.logging.Logger;
 import org.keycloak.authentication.AuthenticationFlowContext;
+import org.keycloak.authentication.AuthenticationFlowError;
 import org.keycloak.authentication.Authenticator;
 import org.keycloak.authentication.authenticators.resetcred.ResetCredentialChooseUser;
 import org.keycloak.connections.httpclient.HttpClientProvider;
 import org.keycloak.events.Details;
+import org.keycloak.events.Errors;
+import org.keycloak.events.EventBuilder;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.AuthenticatorConfigModel;
 import org.keycloak.models.utils.FormMessage;
@@ -21,6 +24,7 @@ import org.keycloak.services.validation.Validation;
 import org.keycloak.util.JsonSerialization;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,27 +44,15 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
 		context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
-
-		context.getEvent().detail(Details.AUTH_METHOD, "auth_method");
+		EventBuilder event = context.getEvent();
+		event.detail(Details.AUTH_METHOD, "auth_method");
 		if (logger.isInfoEnabled()) {
 			logger.info(
 					"validateRecaptcha(AuthenticationFlowContext, boolean, String, String) - Before the validation");
 		}
 
-		AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
-		LoginFormsProvider form = context.form();
-		String userLanguageTag = context.getSession().getContext().resolveLocale(context.getUser()).toLanguageTag();
+		initRecaptcha(context);
 
-		if (captchaConfig == null || captchaConfig.getConfig() == null
-				|| captchaConfig.getConfig().get(SITE_KEY) == null
-				|| captchaConfig.getConfig().get(SITE_SECRET) == null) {
-			form.addError(new FormMessage(null, Messages.RECAPTCHA_NOT_CONFIGURED));
-			return;
-		}
-		siteKey = captchaConfig.getConfig().get(SITE_KEY);
-		form.setAttribute("recaptchaRequired", true);
-		form.setAttribute("recaptchaSiteKey", siteKey);
-		form.addScript("https://www.google.com/recaptcha/api.js?hl=" + userLanguageTag);
 		super.authenticate(context);
 	}
 
@@ -84,17 +76,34 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 		if (success) {
 			super.action(context);
 		} else {
-			errors.add(new FormMessage(null, Messages.RECAPTCHA_FAILED));
-			formData.remove(G_RECAPTCHA_RESPONSE);
-			// context.error(Errors.INVALID_REGISTRATION);
-			// context.validationError(formData, errors);
-			// context.excludeOtherErrors();
+			initRecaptcha(context);
+
+			context.failureChallenge(AuthenticationFlowError.INVALID_CREDENTIALS,
+					context.form().setAttribute("realm", context.getRealm())
+							.setError(Messages.RECAPTCHA_FAILED).createForm(TPL_CODE));
 			return;
 		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("action(AuthenticationFlowContext) - end");
 		}
+	}
+
+	private void initRecaptcha(AuthenticationFlowContext context){
+		AuthenticatorConfigModel captchaConfig = context.getAuthenticatorConfig();
+		LoginFormsProvider form = context.form();
+		String userLanguageTag = context.getSession().getContext().resolveLocale(context.getUser()).toLanguageTag();
+
+		if (captchaConfig == null || captchaConfig.getConfig() == null
+				|| captchaConfig.getConfig().get(SITE_KEY) == null
+				|| captchaConfig.getConfig().get(SITE_SECRET) == null) {
+			form.addError(new FormMessage(null, Messages.RECAPTCHA_NOT_CONFIGURED));
+			return;
+		}
+		siteKey = captchaConfig.getConfig().get(SITE_KEY);
+		form.setAttribute("recaptchaRequired", true);
+		form.setAttribute("recaptchaSiteKey", siteKey);
+		form.addScript("https://www.google.com/recaptcha/api.js?hl=" + userLanguageTag);
 	}
 
 	protected boolean validateRecaptcha(AuthenticationFlowContext context, boolean success, String captcha, String secret) {

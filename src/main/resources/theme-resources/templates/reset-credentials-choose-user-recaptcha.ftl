@@ -24,6 +24,9 @@
 					</div>
 				</div>
 			</div>
+			<div class="custom-reset-password-info">
+				Quên mật khẩu? Chỉ cần nhập vào tên đăng nhập và chúng tôi sẽ giúp bạn cập nhật lại.
+			</div>
 			<div class="custom-reset-password-row">
 				<div class="custom-reset-password-label"></div>
 				<div class="custom-reset-password-content">
@@ -34,10 +37,6 @@
 					</#if>
 				</div>
 			</div>
-			<div class="custom-reset-password-info">
-				Quên mật khẩu? Chỉ cần nhập vào tên đăng nhập và chúng tôi sẽ giúp bạn cập nhật lại.
-			</div>
-
 			<div class="${properties.kcFormGroupClass!} ${properties.kcFormSettingClass!}">
 				<div id="kc-form-buttons" class="custom-reset-password-button-container ${properties.kcFormButtonsClass!}">
 					<input class="custom-reset-password-button ${properties.kcButtonClass!} ${properties.kcButtonPrimaryClass!} ${properties.kcButtonBlockClass!} ${properties.kcButtonLargeClass!}" type="submit" value="${msg("doSubmit")}"/>
