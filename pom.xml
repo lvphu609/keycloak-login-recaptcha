@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.keycloak.marjaa</groupId>
-    <artifactId>recaptcha-reset-password-provider</artifactId>
+    <artifactId>reset-credentials-choose-user-recaptcha-provider</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
 
@@ -75,7 +75,7 @@
     </dependencies>
 
     <build>
-        <finalName>recaptcha-reset-password</finalName>
+        <finalName>reset-credentials-choose-user-recaptcha-provider</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

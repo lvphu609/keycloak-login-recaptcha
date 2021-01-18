@@ -1,4 +1,4 @@
-package io.hitatek.keycloak.resetpassword.recaptcha.authenticator;
+package io.hitatek.keycloak.reset.credentials.choose.user.recaptcha;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ public class RecaptchaResetPasswordFormFactory implements AuthenticatorFactory, 
 
     @Override
     public String getDisplayType() {
-        return "Recaptcha Reset Password Form";
+        return "Choose User With Recaptcha";
     }
 
     @Override

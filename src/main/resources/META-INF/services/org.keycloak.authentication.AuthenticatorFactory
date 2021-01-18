@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-io.hitatek.keycloak.resetpassword.recaptcha.authenticator.RecaptchaResetPasswordFormFactory
+io.hitatek.keycloak.reset.credentials.choose.user.recaptcha.RecaptchaResetPasswordFormFactory

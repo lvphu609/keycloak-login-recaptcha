@@ -21,17 +21,17 @@
                                         ${kcSanitize(messagesPerField.get('username'))?no_esc}
                             </span>
 						</#if>
-
-						<#if recaptchaRequired??>
-							<div class="form-group">
-								<div class="${properties.kcInputWrapperClass!}">
-									<div class="g-recaptcha" data-size="compact" data-sitekey="${recaptchaSiteKey}">
-									</div>
-								</div>
-							</div>
-						</#if>
-
 					</div>
+				</div>
+			</div>
+			<div class="custom-reset-password-row">
+				<div class="custom-reset-password-label"></div>
+				<div class="custom-reset-password-content">
+					<#if recaptchaRequired??>
+						<div class="p-0 ${properties.kcInputWrapperClass!}">
+							<div class="g-recaptcha" data-theme="dark" data-size="normal" data-sitekey="${recaptchaSiteKey}"></div>
+						</div>
+					</#if>
 				</div>
 			</div>
 			<div class="custom-reset-password-info">

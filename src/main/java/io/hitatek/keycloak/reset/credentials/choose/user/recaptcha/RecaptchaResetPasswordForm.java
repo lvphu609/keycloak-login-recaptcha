@@ -1,4 +1,4 @@
-package io.hitatek.keycloak.resetpassword.recaptcha.authenticator;
+package io.hitatek.keycloak.reset.credentials.choose.user.recaptcha;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,10 +35,12 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 	private static final Logger logger = Logger.getLogger(RecaptchaResetPasswordFormFactory.class);
 	private String siteKey;
 
-	private static final String TPL_CODE = "recaptcha-login-reset-password.ftl";
+	private static final String TPL_CODE = "reset-credentials-choose-user-recaptcha.ftl";
 
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
+		context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
+
 		context.getEvent().detail(Details.AUTH_METHOD, "auth_method");
 		if (logger.isInfoEnabled()) {
 			logger.info(
@@ -59,7 +61,6 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 		form.setAttribute("recaptchaRequired", true);
 		form.setAttribute("recaptchaSiteKey", siteKey);
 		form.addScript("https://www.google.com/recaptcha/api.js?hl=" + userLanguageTag);
-		context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
 		super.authenticate(context);
 	}
 
