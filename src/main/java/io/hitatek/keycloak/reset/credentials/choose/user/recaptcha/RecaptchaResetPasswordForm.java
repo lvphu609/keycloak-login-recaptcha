@@ -39,7 +39,7 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 	private static final Logger logger = Logger.getLogger(RecaptchaResetPasswordFormFactory.class);
 	private String siteKey;
 
-	private static final String TPL_CODE = "reset-credentials-choose-user-recaptcha.ftl";
+	private static final String TPL_CODE = "login-reset-password.ftl";
 
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
