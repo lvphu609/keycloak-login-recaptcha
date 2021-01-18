@@ -43,7 +43,11 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 
 	@Override
 	public void authenticate(AuthenticationFlowContext context) {
-		context.challenge(context.form().setAttribute("realm", context.getRealm()).createForm(TPL_CODE));
+
+		Response challenge = context.form()
+				.createForm(TPL_CODE);
+		context.challenge(challenge);
+
 		EventBuilder event = context.getEvent();
 		event.detail(Details.AUTH_METHOD, "auth_method");
 		if (logger.isInfoEnabled()) {
@@ -61,6 +65,7 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 		if (logger.isDebugEnabled()) {
 			logger.debug("action(AuthenticationFlowContext) - start");
 		}
+		EventBuilder event = context.getEvent();
 		MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
 		List<FormMessage> errors = new ArrayList<>();
 		boolean success = false;
@@ -74,7 +79,18 @@ public class RecaptchaResetPasswordForm extends ResetCredentialChooseUser implem
 			success = validateRecaptcha(context, success, captcha, secret);
 		}
 		if (success) {
-			super.action(context);
+			String username = formData.getFirst("username");
+			if (username == null || username.isEmpty()) {
+				initRecaptcha(context);
+
+				event.error(Errors.USERNAME_MISSING);
+				Response challenge = context.form()
+						.addError(new FormMessage(Validation.FIELD_USERNAME, Messages.MISSING_USERNAME))
+						.createPasswordReset();
+				context.failureChallenge(AuthenticationFlowError.INVALID_USER, challenge);
+			}else{
+				super.action(context);
+			}
 		} else {
 			initRecaptcha(context);
 
